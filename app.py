@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -29,27 +29,44 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 db.init_app(app)
 
 with app.app_context():
-    # Import models to ensure tables are created
+    # Late import of models to avoid circular import
     import models
     db.create_all()
 
-# Import and register blueprints
+# Import and register blueprints AFTER db & models are ready
 from auth import auth_bp
 from dashboard import dashboard_bp
 from admin import admin_bp
-from payment import payment_bp
+try:
+    from payment import payment_bp
+    app.register_blueprint(payment_bp)
+except ModuleNotFoundError:
+    # If payment.py doesn't exist, skip it for now
+    print("payment_bp not found, skipping")
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(payment_bp)
 
 # Landing page route
-from flask import render_template
-
 @app.route('/')
 def landing():
     return render_template('landing.html')
+
+# One-time admin creation route
+@app.route("/create-admin-temp")
+def create_admin_temp():
+    from models import User  # late import to avoid circular
+    if User.query.filter_by(is_admin=True).first():
+        return "Admin already exists. Route disabled!"
+
+    admin = User(email="admin1@gmail.com")
+    admin.set_password("123456")
+    admin.is_admin = True
+
+    db.session.add(admin)
+    db.session.commit()
+    return "✅ Admin created! Login with admin@gmail.com / 123456"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
