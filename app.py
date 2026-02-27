@@ -1,9 +1,11 @@
 import os
 import logging
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from models import User  # make sure models.py has User
+from extensions import db  # if you separate extensions, else use db directly
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -45,11 +47,33 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(payment_bp)
 
 # Landing page route
-from flask import render_template
-
 @app.route('/')
 def landing():
     return render_template('landing.html')
+
+# ===============================
+# 🔹 One-Time Admin Creation Route
+# ===============================
+@app.route("/create-admin-temp")
+def create_admin_temp():
+    # Check if admin already exists
+    if User.query.filter_by(is_admin=True).first():
+        return "Admin already exists. This route is now disabled!"
+
+    # Create first admin
+    admin = User(email="admin@gmail.com")
+    admin.set_password("123456")
+    admin.is_admin = True
+
+    db.session.add(admin)
+    db.session.commit()
+
+    # Optional: set a flag to prevent reuse (in memory)
+    app.config['ADMIN_CREATED'] = True
+
+    return "✅ Admin created! Login with admin@gmail.com / 123456. Route is now disabled."
+
+# ===============================
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
