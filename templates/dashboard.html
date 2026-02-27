@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AdsPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-10">
+        
+        <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div>
+                <h2 class="text-white mb-1" style="font-weight: 600; font-size: 1.75rem;">Overview</h2>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.95rem;" class="mb-0">Welcome back, {{ user.email }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('payment.add_funds') }}" class="btn btn-modern px-4 py-2" style="background-color: #f7931a; color: white; border-radius: 8px; font-weight: 500;">
+                    <i class="fas fa-plus me-2"></i>Add Funds
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="glass-card p-4 rounded-4 h-100" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 48px; height: 48px; background: rgba(46, 204, 113, 0.2); color: #2ecc71;">
+                            <i class="fas fa-wallet fa-lg"></i>
+                        </div>
+                        <h6 class="text-white-50 mb-0" style="font-weight: 500;">Total Ad Credit</h6>
+                    </div>
+                    <h2 class="text-white mb-0 fw-bold">${{ "%.2f"|format(total_ad_credit) }}</h2>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="glass-card p-4 rounded-4 h-100" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 48px; height: 48px; background: rgba(66, 133, 244, 0.2); color: #4285F4;">
+                            <i class="fab fa-google fa-lg"></i>
+                        </div>
+                        <h6 class="text-white-50 mb-0" style="font-weight: 500;">Active Accounts</h6>
+                    </div>
+                    <h2 class="text-white mb-0 fw-bold">{{ assigned_accounts|length }}</h2>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glass-card p-4 rounded-4 h-100" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 48px; height: 48px; background: rgba(243, 156, 18, 0.2); color: #f39c12;">
+                            <i class="fas fa-chart-line fa-lg"></i>
+                        </div>
+                        <h6 class="text-white-50 mb-0" style="font-weight: 500;">Total Deposits</h6>
+                    </div>
+                    <h2 class="text-white mb-0 fw-bold">{{ recent_transactions|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="glass-card p-4 rounded-4 h-100" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <h5 class="text-white mb-4" style="font-weight: 500;"><i class="fas fa-users-cog me-2" style="color: rgba(255,255,255,0.7);"></i>Your Ad Accounts</h5>
+                    
+                    {% if assigned_accounts %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for acc in assigned_accounts %}
+                            <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05);">
+                                <div class="me-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background: #4285F4; color: white;">
+                                        <i class="fab fa-google"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="text-white mb-1" style="font-weight: 500; font-size: 0.95rem;">ID: {{ acc.google_account.account_id }}</h6>
+                                    <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">Assigned: {{ acc.assigned_at.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25" style="padding: 0.4em 0.8em;">Active</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x mb-3" style="color: rgba(255,255,255,0.1);"></i>
+                            <p style="color: rgba(255, 255, 255, 0.6);">No Google Ads accounts assigned yet.<br>Please contact an admin to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="glass-card p-4 rounded-4 h-100" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="text-white mb-0" style="font-weight: 500;"><i class="fas fa-history me-2" style="color: rgba(255,255,255,0.7);"></i>Recent Deposits</h5>
+                        <a href="{{ url_for('dashboard.transactions') }}" style="color: rgba(255,255,255,0.6); font-size: 0.85rem; text-decoration: none;">View All <i class="fas fa-chevron-right ms-1" style="font-size: 0.7rem;"></i></a>
+                    </div>
+
+                    {% if recent_transactions %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for tx in recent_transactions %}
+                            <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05);">
+                                <div class="me-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="text-white mb-1" style="font-weight: 500; font-size: 0.95rem;">Deposit</h6>
+                                    <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">{{ tx.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                                <div class="ms-auto text-end">
+                                    <h6 class="text-success mb-0 fw-bold">+${{ "%.2f"|format(tx.amount) }}</h6>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-receipt fa-3x mb-3" style="color: rgba(255,255,255,0.1);"></i>
+                            <p style="color: rgba(255, 255, 255, 0.6);">No transactions found.<br>Your deposits will appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

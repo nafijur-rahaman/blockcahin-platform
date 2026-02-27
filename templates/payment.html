@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Add Funds - AdsPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <div class="mb-3">
+                <i class="{{ platform.icon }}" style="font-size: 3rem; color: {{ platform.color }};"></i>
+            </div>
+            <h2 class="text-white mb-3" style="font-weight: 600; font-size: 1.75rem;">Add Funds to {{ platform.name }}</h2>
+            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.95rem;">{{ platform.description }}</p>
+            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">Top up your advertising budget with secure crypto payments via Oxapay</p>
+        </div>
+
+        <div class="glass-card">
+            <!-- Payment Method Selection -->
+            <div class="mb-4">
+                <h5 class="text-white mb-3" style="font-weight: 500; font-size: 1.1rem;">
+                    Secure Payment with Oxapay
+                </h5>
+                <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05);">
+                    <div class="me-3">
+                        <div class="platform-icon" style="width: 40px; height: 40px; background: #f7931a;">
+                            <i class="fab fa-bitcoin"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-1" style="font-weight: 500; font-size: 0.95rem;">Oxapay Crypto Gateway</h6>
+                        <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">Accept Bitcoin, USDT, ETH and other cryptocurrencies</small>
+                    </div>
+                    <div class="ms-auto">
+                        <span class="badge bg-success">Secure</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How it Works -->
+            <div class="mb-4 p-3 rounded-3" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+                <h6 class="text-white mb-3" style="font-weight: 500; font-size: 0.9rem;">
+                    How it works:
+                </h6>
+                <div class="row text-sm">
+                    <div class="col-md-6">
+                        <ul style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;" class="mb-0">
+                            <li>Receive account and login credentials for adspower.com</li>
+                            <li>Run campaigns for forex, crypto, casino, ecommerce etc.</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul style="color: rgba(255, 255, 255, 0.6); font-size: 0.85rem;" class="mb-0">
+                            <li>5% processing fee on all deposits</li>
+                            <li>Instant access to advertising platforms</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+                
+            <!-- Payment Form -->
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <!-- Amount Input -->
+                <div class="mb-4">
+                    <label class="form-label text-white mb-3" style="font-weight: 500; font-size: 0.9rem;">
+                        Deposit Amount
+                    </label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent text-white border-white-50">$</span>
+                        {{ form.amount(class="form-modern form-control-lg", placeholder="500.00", step="0.01", value="500") }}
+                    </div>
+                    {% if form.amount.errors %}
+                        <div class="text-danger small mt-2">
+                            {% for error in form.amount.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text mt-2" style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">
+                        Minimum: $500.00, Maximum: $10,000.00
+                    </div>
+                </div>
+                
+                <!-- Fee Calculator -->
+                <div class="mb-4 p-4 rounded-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h6 class="text-white mb-3">
+                        <i class="fas fa-calculator me-2"></i>Payment Breakdown
+                    </h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <small class="text-white-50 d-block">Deposit Amount</small>
+                                <div id="deposit-amount" class="h5 text-white fw-bold">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <small class="text-white-50 d-block">Processing Fee ({% if platform.name == 'Taboola' %}7%{% else %}5%{% endif %})</small>
+                                <div id="processing-fee" class="h5 text-warning fw-bold">-$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <small class="text-white-50 d-block">Ad Credit You'll Get</small>
+                                <div id="net-amount" class="h4 text-success fw-bold">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Amount Buttons -->
+                <div class="mb-4">
+                    <h6 class="text-white mb-3">
+                        <i class="fas fa-zap me-2"></i>Quick Select
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-6 col-md-3">
+                            <button type="button" class="btn btn-outline-light w-100" onclick="setAmount(100)">$100</button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <button type="button" class="btn btn-outline-light w-100" onclick="setAmount(500)">$500</button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <button type="button" class="btn btn-outline-light w-100" onclick="setAmount(1000)">$1,000</button>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <button type="button" class="btn btn-outline-light w-100" onclick="setAmount(5000)">$5,000</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-modern btn-lg py-3">
+                        <i class="fab fa-bitcoin me-2"></i>Add Funds to {{ platform.name }}
+                        <small class="d-block opacity-75">Secure Crypto Payment via Oxapay</small>
+                    </button>
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Modern payment interface
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.getElementById('amount');
+    const depositAmount = document.getElementById('deposit-amount');
+    const processingFee = document.getElementById('processing-fee');
+    const netAmount = document.getElementById('net-amount');
+    
+    function updateCalculation() {
+        const amount = parseFloat(amountInput.value) || 0;
+        const feeRate = '{{ platform.name }}' === 'Taboola' ? 0.07 : 0.05;
+        const fee = amount * feeRate;
+        const net = amount - fee;
+        
+        depositAmount.textContent = '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        processingFee.textContent = '-$' + fee.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        netAmount.textContent = '$' + net.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+    
+    amountInput.addEventListener('input', updateCalculation);
+    updateCalculation(); // Initial calculation
+});
+
+// Quick amount selection
+function setAmount(amount) {
+    const amountInput = document.getElementById('amount');
+    amountInput.value = amount;
+    amountInput.dispatchEvent(new Event('input'));
+    
+    // Add visual feedback
+    event.target.classList.add('btn-success');
+    setTimeout(() => {
+        event.target.classList.remove('btn-success');
+    }, 200);
+}
+
+// Platform selection function
+function selectPlatform(platform) {
+    // Add visual feedback
+    event.currentTarget.style.transform = 'translateY(-4px)';
+    setTimeout(() => {
+        event.currentTarget.style.transform = 'translateY(-8px)';
+    }, 150);
+    
+    // Platform-specific actions can be added here
+    console.log('Selected platform:', platform);
+}
+</script>
+{% endblock %}

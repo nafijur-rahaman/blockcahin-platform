@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Google Ads Platform{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-bar me-2"></i>Admin Dashboard</h2>
+        <p class="text-muted">Platform overview and statistics</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h5 class="card-title">Total Users</h5>
+                <h3>{{ total_users }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                <h5 class="card-title">Total Revenue</h5>
+                <h3>${{ "%.2f"|format(total_funds) }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-percentage fa-2x mb-2"></i>
+                <h5 class="card-title">Total Fees</h5>
+                <h3>${{ "%.2f"|format(total_fees) }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fab fa-google fa-2x mb-2"></i>
+                <h5 class="card-title">Ads Accounts</h5>
+                <h3>{{ assigned_accounts }}/{{ total_ads_accounts }}</h3>
+                <small>Assigned/Total</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-users me-1"></i>Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.accounts') }}" class="btn btn-outline-success w-100">
+                            <i class="fab fa-google me-1"></i>Manage Accounts
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('admin.transactions') }}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-exchange-alt me-1"></i>View Transactions
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-eye me-1"></i>User View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock me-2"></i>Recent Transactions</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Fee</th>
+                                    <th>Net</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>{{ transaction.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                                    <td>{{ transaction.user.email }}</td>
+                                    <td>${{ "%.2f"|format(transaction.amount) }}</td>
+                                    <td>${{ "%.2f"|format(transaction.fee) }}</td>
+                                    <td>${{ "%.2f"|format(transaction.net_amount) }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ transaction.status|title }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('admin.transactions') }}" class="btn btn-outline-primary">
+                            View All Transactions
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-exchange-alt fa-3x text-muted mb-3"></i>
+                        <h5>No Transactions Yet</h5>
+                        <p class="text-muted">Transaction activity will appear here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

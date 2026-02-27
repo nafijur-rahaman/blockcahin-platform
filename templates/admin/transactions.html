@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}All Transactions - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-10">
+        
+        <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3" style="border-color: rgba(255,255,255,0.1) !important;">
+            <div>
+                <h2 class="text-white mb-1" style="font-weight: 600; font-size: 1.75rem;"><i class="fas fa-money-bill-wave me-2 text-success"></i>All Transactions</h2>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.95rem;" class="mb-0">Monitor all deposit activities across the platform.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light px-4 py-2" style="border-radius: 8px;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="glass-card p-4 rounded-4" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0" style="background: transparent;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                            <th scope="col" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">Tx ID</th>
+                            <th scope="col" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">User</th>
+                            <th scope="col" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">Date & Time</th>
+                            <th scope="col" class="text-end" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">Amount</th>
+                            <th scope="col" class="text-end" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">Fee</th>
+                            <th scope="col" class="text-end" style="background: transparent; color: rgba(255,255,255,0.7); font-weight: 500;">Net Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td class="align-middle" style="background: transparent;">#{{ tx.id }}</td>
+                            <td class="align-middle" style="background: transparent; font-weight: 500;">{{ tx.user.email }}</td>
+                            <td class="align-middle" style="background: transparent; color: rgba(255,255,255,0.6);">{{ tx.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td class="align-middle text-end text-success fw-bold" style="background: transparent;">${{ "%.2f"|format(tx.amount) }}</td>
+                            <td class="align-middle text-end text-warning" style="background: transparent;">${{ "%.2f"|format(tx.fee) }}</td>
+                            <td class="align-middle text-end fw-bold" style="background: transparent; color: #fff;">${{ "%.2f"|format(tx.amount - tx.fee) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% if not transactions %}
+                <div class="text-center py-5">
+                    <i class="fas fa-receipt fa-3x mb-3" style="color: rgba(255,255,255,0.1);"></i>
+                    <p style="color: rgba(255, 255, 255, 0.6);">No transactions have been made on the platform yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

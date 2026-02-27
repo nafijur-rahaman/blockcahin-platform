@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Google Ads Accounts - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fab fa-google me-2"></i>Google Ads Account Management</h2>
+        <p class="text-muted">Manage the pool of Google Ads accounts available for assignment</p>
+    </div>
+</div>
+
+<!-- Add New Account Form -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-plus me-2"></i>Add New Google Ads Account</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.add_account') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.account_id.label(class="form-label") }}
+                            {{ form.account_id(class="form-control", placeholder="123-456-7890") }}
+                            {% if form.account_id.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.account_id.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.account_name.label(class="form-label") }}
+                            {{ form.account_name(class="form-control", placeholder="My Google Ads Account") }}
+                            {% if form.account_name.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.account_name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-plus me-1"></i>Add Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Statistics -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fab fa-google fa-2x mb-2"></i>
+                <h5>Total Accounts</h5>
+                <h3>{{ accounts|length }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                <h5>Assigned</h5>
+                <h3>{{ accounts|selectattr('is_assigned')|list|length }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x mb-2"></i>
+                <h5>Available</h5>
+                <h3>{{ accounts|rejectattr('is_assigned')|list|length }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accounts Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>All Google Ads Accounts</h5>
+            </div>
+            <div class="card-body">
+                {% if accounts %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Account ID</th>
+                                    <th>Account Name</th>
+                                    <th>Status</th>
+                                    <th>Assigned To</th>
+                                    <th>Ad Credit</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for account in accounts %}
+                                <tr>
+                                    <td><strong>{{ account.account_id }}</strong></td>
+                                    <td>{{ account.account_name }}</td>
+                                    <td>
+                                        {% if account.is_assigned %}
+                                            <span class="badge bg-success">Assigned</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Available</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if account.user_assignments %}
+                                            {% for assignment in account.user_assignments %}
+                                                {{ assignment.user.email }}<br>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if account.user_assignments %}
+                                            {% for assignment in account.user_assignments %}
+                                                ${{ "%.2f"|format(assignment.ad_credit) }}<br>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ account.created_at.strftime('%b %d, %Y') }}</td>
+                                    <td>
+                                        {% if not account.is_assigned %}
+                                            <form method="POST" action="{{ url_for('admin.remove_account', account_id=account.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                        onclick="return confirm('Are you sure you want to remove this account?')">
+                                                    <i class="fas fa-trash me-1"></i>Remove
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted small">Cannot remove assigned account</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fab fa-google fa-3x text-muted mb-3"></i>
+                        <h5>No Google Ads Accounts</h5>
+                        <p class="text-muted">Add Google Ads accounts to the pool so they can be assigned to users when they make deposits.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Card -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle me-2"></i>How Account Assignment Works</h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>When users make their first deposit, they are automatically assigned an available Google Ads account</li>
+                    <li>The deposit amount (minus 5% fee) becomes their ad credit for that account</li>
+                    <li>Subsequent deposits add more ad credit to their existing account</li>
+                    <li>Accounts marked as "Assigned" cannot be removed from the system</li>
+                    <li>Make sure to maintain a pool of available accounts for new users</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

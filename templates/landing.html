@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>Welcome to IBLOCKCHAIN PLATFORM</h1>
+    <p class="lead">Your premium platform for managing Google Ads accounts.</p>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg mx-2">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-secondary btn-lg mx-2">Register</a>
+    </div>
+</div>
+{% endblock %}

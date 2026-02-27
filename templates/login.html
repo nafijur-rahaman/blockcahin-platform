@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - AdsPro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+        <div class="glass-card text-center">
+            <!-- Logo -->
+            <div class="mb-4">
+                <div class="logo-icon mx-auto mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h2 class="text-white mb-2" style="font-weight: 600; font-size: 1.5rem;">Welcome Back</h2>
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">Sign in to your AdsPro account</p>
+            </div>
+
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    <label class="form-label text-start d-block" style="color: rgba(255, 255, 255, 0.8); font-weight: 400; font-size: 0.9rem;">
+                        Email Address
+                    </label>
+                    {{ form.email(class="form-modern", placeholder="you@example.com") }}
+                    {% if form.email.errors %}
+                        <div class="text-danger small mt-2 text-start">
+                            {% for error in form.email.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-start d-block" style="color: rgba(255, 255, 255, 0.8); font-weight: 400; font-size: 0.9rem;">
+                        Password
+                    </label>
+                    {{ form.password(class="form-modern", placeholder="Enter your password") }}
+                    {% if form.password.errors %}
+                        <div class="text-danger small mt-2 text-start">
+                            {% for error in form.password.errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-modern">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;" class="mb-0">
+                    Don't have an account? 
+                    <a href="{{ url_for('auth.register') }}" class="text-white text-decoration-none" style="font-weight: 400;">
+                        Create one now
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

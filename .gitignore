@@ -1,0 +1,13 @@
+# Environments
+.venv/
+.env
+
+# Database
+instance/
+local.db
+*.db
+
+# Python Cache
+__pycache__/
+*.pyc
+uv.lock
